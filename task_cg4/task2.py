@@ -68,10 +68,11 @@ def clear_scene():
     shapes.clear()
 
 def popup(event):
-    global x, y
+    global x, y, prev_x, prev_y
     x = event.x
     y = event.y
     menu.post(event.x_root, event.y_root)
+    
 
 def square():
     shapes.append(Shape(ShapeType.square, [x, y, brush_size]))
@@ -97,16 +98,21 @@ def segment():
 
 def click(event):
     global prev_x, prev_y
+    if prev_x == None:
+        prev_x = event.x
+        prev_y = event.y
+        canvas.bind('<Button-3>', popup)
+        return
+    
     x = event.x
     y = event.y
 
-    if prev_x:  # если в переменной prev_x есть значение (не None)
-        shapes.append(Shape(ShapeType.segment, [prev_x, prev_y, x, y, 3]))
-        canvas.create_line(x, y, prev_x, prev_y, width=3, fill=color)
-
-    prev_x = x
-    prev_y = y
+    shapes.append(Shape(ShapeType.segment, [prev_x, prev_y, x, y, 3]))
+    canvas.create_line(prev_x, prev_y, x, y, width=3, fill=color)
     canvas.bind('<Button-3>', popup)
+
+    prev_x = None
+    prev_y = None
 
 canvas.bind('<B1-Motion>', draw)
 canvas.bind('<Button-3>', popup)
