@@ -1,3 +1,4 @@
+from itertools import cycle
 from tkinter import *
 from tkinter import colorchooser, messagebox
 
@@ -15,17 +16,16 @@ class ShapeType(Enum):
 
 # values - список всех значений, связанных с фигурой
 class Shape:
-    def __init__(self, type, values):
+    def __init__(self, type, values, color):
         self.type = type
         self.values = values
-    
+        self.color = color
 
 shapes = []
 
 x = 0
 y = 0
 count_click = 0
-
 
 root = Tk()
 root.title("Ну почти paint")
@@ -35,11 +35,10 @@ height = 600
 brush_size = 10
 color = 'blue'
 
-#root.columnconfigure(9, weight=1)
-#root.rowconfigure(4, weight=1)
-
 canvas = Canvas(root,  width=width, height=height, bg = 'white')
 canvas.grid(row=1, column=0, columnspan=6, rowspan=5, padx=4, pady=5, sticky=E+W+S+N )
+
+is_redraw = False
 
 def draw(event):
     x1, y1= (event.x - brush_size), (event.y - brush_size)
@@ -63,9 +62,9 @@ def clear_scene():
     canvas.delete('all')
     canvas['bg']='white'
     draw_img.rectangle((0, 0, width, height), width=0, fill='white')
-    #for shape in shapes:
-    #    print(shape.type, " ", shape.values)
-    shapes.clear()
+    
+    if not is_redraw:
+        shapes.clear()
 
 def popup(event):
     global x, y, prev_x, prev_y
@@ -75,19 +74,19 @@ def popup(event):
     
 
 def square():
-    shapes.append(Shape(ShapeType.square, [x, y, brush_size]))
+    shapes.append(Shape(ShapeType.square, [x, y, brush_size], color))
 
     canvas.create_rectangle(x, y, x+brush_size, y+brush_size, fill=color, width=0)
     draw_img.polygon((x, y, x+brush_size, y, x+brush_size, y+brush_size, x, y+brush_size), fill = color)
 
 def point():
-    shapes.append(Shape(ShapeType.point, [x, y, 1]))
+    shapes.append(Shape(ShapeType.point, [x, y, 3], color))
 
-    canvas.create_oval(x, y, x+1, y+1, fill=color, width=0)
-    draw_img.ellipse((x, y, x+1, y+1), fill=color)
+    canvas.create_oval(x, y, x+3, y+3, fill=color, width=0)
+    draw_img.ellipse((x, y, x+3, y+3), fill=color)
 
 def circle():
-    shapes.append(Shape(ShapeType.circle, [x, y, brush_size]))
+    shapes.append(Shape(ShapeType.circle, [x, y, brush_size], color))
 
     canvas.create_oval(x, y, x+brush_size, y+brush_size, fill=color, width=0)
     draw_img.ellipse((x, y, x+brush_size, y+brush_size), fill=color)
@@ -107,7 +106,8 @@ def click(event):
     x = event.x
     y = event.y
 
-    shapes.append(Shape(ShapeType.segment, [prev_x, prev_y, x, y, 3]))
+    shapes.append(Shape(ShapeType.segment, [prev_x, prev_y, x, y, 3], color))
+
     canvas.create_line(prev_x, prev_y, x, y, width=3, fill=color)
     canvas.bind('<Button-3>', popup)
 
@@ -138,9 +138,58 @@ Scale(root, variable=v, from_=1, to=100, orient=HORIZONTAL, command=select, leng
 
 Button(root, text= 'Очистить', width=10, command=clear_scene).grid(row=0, column=3)
 
+def redraw():
+    global x, y, is_redraw
+    is_redraw = True
+    clear_scene()
+    for shape in shapes:
+        x = shape.values[0]
+        y = shape.values[1]
+        if shape.type == ShapeType.point:
+            #point()
+            brush_size = shape.values[2]
+            color = shape.color
+            canvas.create_oval(x, y, x + brush_size, y + brush_size, fill=color, width=0)
+            draw_img.ellipse((x, y, x + brush_size, y + brush_size), fill=color)
+        elif shape.type == ShapeType.segment:
+            x_next = shape.values[2]
+            y_next = shape.values[3]
+            color = shape.color
+            canvas.create_line(x, y, x_next, y_next, width=3, fill=color)
+        elif shape.type == ShapeType.square:
+            #square()
+            brush_size = shape.values[2]
+            color = shape.color
+            canvas.create_rectangle(x, y, x + brush_size, y + brush_size, fill=color, width=0)
+            draw_img.polygon((x, y, x + brush_size, y, x + brush_size, y + brush_size, x, y + brush_size), fill = color)
+        else:
+            #circle()
+            brush_size = shape.values[2]
+            color = shape.color
+            canvas.create_oval(x, y, x + brush_size, y + brush_size, fill=color, width=0)
+            draw_img.ellipse((x, y, x + brush_size, y + brush_size), fill=color)
+
+    is_redraw = False
+
+
+def translate():
+    dx = var_x_trans.get()
+    dy = var_y_trans.get()
+
+    for shape in shapes:
+        if shape.type == ShapeType.circle or shape.type == ShapeType.square:
+            coord = np.array([shape.values[0], shape.values[1], 1])
+            matrix = np.array([[1, 0, 0], [0, 1, 0], [dx, -dy, 1]])
+            res = coord.dot(matrix)
+            shape.values[0], shape.values[1] = res[0], res[1]
+    
+    redraw()
+
+
+
 Label(root, text="Полигоны", padx=5, pady=5).grid(row=0, column=7)
 
-Button(root, text="Смещение", padx=5, pady=5).grid(row=1, column=6)
+Button(root, text="Смещение", padx=5, pady=5, command=translate).grid(row=1, column=6)
 var_x_trans = IntVar()
 var_x_trans.set(0)
 scale_x_trans = Scale(root, variable=var_x_trans, from_=-400, to=400, orient=HORIZONTAL, label='X', length = '150').grid(row=1, column=7)
@@ -166,6 +215,5 @@ Label(root, text="Рёбра", padx=5, pady=5).grid(row=4, column=7)
 Button(root, text="Поворот на 90°", padx=5, pady=5).grid(row=5, column=6)
 Button(root, text="Поворот на -90°", padx=5, pady=5).grid(row=5, column=7)
 Button(root, text="Поиск точек пересечения", padx=5, pady=5).grid(row=5, column=8)
-
 
 root.mainloop()
