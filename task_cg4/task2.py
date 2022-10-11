@@ -11,7 +11,7 @@ class ShapeType(Enum):
     point = 0
     segment = 1
     square = 2
-    cyrcle = 3
+    circle = 3
 
 # values - список всех значений, связанных с фигурой
 class Shape:
@@ -29,17 +29,17 @@ count_click = 0
 
 root = Tk()
 root.title("Ну почти paint")
-width = 800 
+width = 800
 height = 600 
 
 brush_size = 10
 color = 'blue'
 
-root.columnconfigure(6, weight = 1)
-root.rowconfigure(2, weight=1)
+#root.columnconfigure(9, weight=1)
+#root.rowconfigure(4, weight=1)
 
 canvas = Canvas(root,  width=width, height=height, bg = 'white')
-canvas.grid(row=1, column =0, columnspan=7, padx=5, pady=5, sticky=E+W+S+N )
+canvas.grid(row=1, column=0, columnspan=6, rowspan=5, padx=4, pady=5, sticky=E+W+S+N )
 
 def draw(event):
     x1, y1= (event.x - brush_size), (event.y - brush_size)
@@ -85,8 +85,8 @@ def point():
     canvas.create_oval(x, y, x+1, y+1, fill=color, width=0)
     draw_img.ellipse((x, y, x+1, y+1), fill=color)
 
-def cyrcle():
-    shapes.append(Shape(ShapeType.cyrcle, [x, y, brush_size]))
+def circle():
+    shapes.append(Shape(ShapeType.circle, [x, y, brush_size]))
 
     canvas.create_oval(x, y, x+brush_size, y+brush_size, fill=color, width=0)
     draw_img.ellipse((x, y, x+brush_size, y+brush_size), fill=color)
@@ -115,7 +115,7 @@ menu = Menu(tearoff=0)
 menu.add_command(label='Точка', command=point)
 menu.add_command(label='Отрезок', command=segment)
 menu.add_command(label='Квадрат', command=square)
-menu.add_command(label='Круг', command=cyrcle)
+menu.add_command(label='Круг', command=circle)
 
 image1 = Image.new('RGB', (width, height), 'white')
 draw_img = ImageDraw.Draw(image1)
@@ -128,8 +128,38 @@ prev_x = None
 prev_y = None
 
 v = IntVar(value=10)
-Scale(root, variable=v, from_=1, to=100, orient=HORIZONTAL, command=select,  length = '400').grid(row=0, column=4, padx=6)
+Scale(root, variable=v, from_=1, to=100, orient=HORIZONTAL, command=select, length = '400').grid(row=0, column=4, padx=6)
 
 Button(root, text= 'Очистить', width=10, command=clear_scene).grid(row=0, column=3)
+
+Label(root, text="Полигоны", padx=5, pady=5).grid(row=0, column=7)
+
+Button(root, text="Смещение", padx=5, pady=5).grid(row=1, column=6)
+var_x_trans = IntVar()
+var_x_trans.set(0)
+scale_x_trans = Scale(root, variable=var_x_trans, from_=-400, to=400, orient=HORIZONTAL, label='X', length = '150').grid(row=1, column=7)
+var_y_trans = IntVar()
+var_y_trans.set(0)
+scale_y_trans = Scale(root, variable=var_y_trans, from_=-300, to=300, orient=HORIZONTAL, label='Y', length = '150').grid(row=1, column=8)
+
+Button(root, text="Поворот", padx=5, pady=5).grid(row=2, column=6)
+var_rot = IntVar()
+var_rot.set(0)
+scale_rot = Scale(root, variable=var_rot, from_=-360, to=360, orient=HORIZONTAL, label='Градусы', length = '150').grid(row=2, column=7)
+
+Button(root, text="Маштабирование", padx=5, pady=5).grid(row=3, column=6)
+var_x_scal = IntVar()
+var_x_scal.set(0)
+scale_x_scal = Scale(root, variable=var_x_scal, from_=-10, to=10, orient=HORIZONTAL, label='X', length = '150').grid(row=3, column=7)
+var_y_scal = IntVar()
+var_y_scal.set(0)
+scale_y_scal = Scale(root, variable=var_y_scal, from_=-10, to=10, orient=HORIZONTAL, label='Y', length = '150').grid(row=3, column=8)
+
+Label(root, text="Рёбра", padx=5, pady=5).grid(row=4, column=7)
+
+Button(root, text="Поворот на 90°", padx=5, pady=5).grid(row=5, column=6)
+Button(root, text="Поворот на -90°", padx=5, pady=5).grid(row=5, column=7)
+Button(root, text="Поиск точек пересечения", padx=5, pady=5).grid(row=5, column=8)
+
 
 root.mainloop()
