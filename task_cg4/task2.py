@@ -1,12 +1,9 @@
-from itertools import cycle
 from tkinter import *
-from tkinter import colorchooser, messagebox
-
+from tkinter import colorchooser
+from sympy import Lambda, symbols
 from PIL import Image, ImageDraw
 import numpy as np
-from random import randint
 import math
-
 from enum import Enum
 
 class ShapeType(Enum):
@@ -45,7 +42,6 @@ def draw(event):
     x2, y2 = (event.x + brush_size), (event.y + brush_size)
     canvas.create_oval(x1, y1, x2, y2, fill=color, width=0)
     draw_img.ellipse((x1, y1, x2, y2), fill=color, width=0)
-
 
 def choose_color():
     global color
@@ -154,7 +150,7 @@ def redraw():
     for shape in shapes:
         if shape.type == ShapeType.point:
             canvas.create_oval(shape.coordinates, fill=shape.color, width=0)
-            draw_img.ellipse(shape.coordinates, fill=shape.color)
+            draw_img.ellipse(shape.coordinates, fill=shape.color, width=0)
         elif shape.type == ShapeType.segment:
             canvas.create_line(shape.coordinates, width=3, fill=shape.color)
         elif shape.type == ShapeType.segment:
@@ -226,22 +222,11 @@ def rotate(shape, angle):
 
 def rotate_polygons():
     angle = var_rot.get()
-    '''sin = math.sin(np.deg2rad(angle))
-    cos = math.cos(np.deg2rad(angle))'''
 
     for shape in shapes:
         if shape.type == ShapeType.triangle or shape.type == ShapeType.square:
             rotate(shape, angle)
-        '''if shape.type == ShapeType.triangle or shape.type == ShapeType.square:
-                x_center, y_center = find_center(shape)
-                matrix = np.array([[1, 0, 0], [0, 1, 0], [-x_center, -y_center, 1]])
-                coord_mult(shape, matrix)
-
-                matrix = np.array([[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]])
-                coord_mult(shape, matrix)
-
-                matrix = np.array([[1, 0, 0], [0, 1, 0], [x_center, y_center, 1]])
-                coord_mult(shape, matrix)'''
+        
     redraw()
 
 def scale():
@@ -275,9 +260,61 @@ def rotate_segments_neg():
 
     for shape in shapes:
         if shape.type == ShapeType.segment:
-            print("OK 1")
+            rotate(shape, angle)
 
     redraw()
+
+def intersection_points():
+    segments = []
+    for shape in shapes:
+        if shape.type == ShapeType.segment:
+            segments.append(shape)
+    
+    if len(segments) <= 1:
+        return
+
+    y = symbols('y')
+    for i in range(0, len(segments)):
+        s_1 = segments[i]
+        p_1 = [s_1.coordinates[0], s_1.coordinates[1]]
+        p_2 = [s_1.coordinates[2], s_1.coordinates[3]]
+
+        if p_1[0] == p_2[0]:
+            eq_1 = Lambda((y), p_1[0])
+            k_1 = 0
+        else:
+            k_1 = (p_1[1] - p_2[1]) / (p_1[0] - p_2[0])
+            b_1 = p_2[1] - k_1 * p_2[0]
+            eq_1 = Lambda((y), (y - b_1) / k_1)
+
+        for j in range (i + 1, len(segments)):
+            s_2 = segments[j]
+
+            p_3 = [s_2.coordinates[0], s_2.coordinates[1]]
+            p_4 = [s_2.coordinates[2], s_2.coordinates[3]]
+
+            if p_3[0] == p_4[0]:
+                eq_2 = Lambda((y), p_3[0])
+                k_2 = 0
+            else:
+                k_2 = (p_3[1] - p_4[1]) / (p_3[0] - p_4[0])
+                b_2 = p_4[1] - k_2 * p_4[0]
+                eq_2 = Lambda((y), (y - b_2) / k_2)
+
+            y_s = [p_1[1], p_2[1], p_3[1], p_4[1]]
+            y_s.sort()
+            y_1 = y_s[1]
+            y_2 = y_s[2]
+
+            for i in np.arange(y_1, y_2, 0.5):
+                x_1 = eq_1(i)
+                x_2 = eq_2(i)
+                if int(abs(x_1 - x_2)) <= 1:
+                    x = (x_1 + x_2) / 2
+                    canvas.create_oval(x - 2, i - 2, x + 2, i + 2, fill='red', width=0)
+                    draw_img.ellipse((x - 2, i - 2, x + 2, i + 2), fill='red', width=0)
+                    break
+
 
 Label(root, text="Полигоны", padx=5, pady=5).grid(row=0, column=7)
 
@@ -306,6 +343,6 @@ Label(root, text="Рёбра", padx=5, pady=5).grid(row=4, column=7)
 
 Button(root, text="Поворот на 90°", padx=5, pady=5, command=rotate_segments).grid(row=5, column=6)
 Button(root, text="Поворот на -90°", padx=5, pady=5, command=rotate_segments_neg).grid(row=5, column=7)
-Button(root, text="Поиск точек пересечения", padx=5, pady=5).grid(row=5, column=8)
+Button(root, text="Поиск точек пересечения", padx=5, pady=5, command=intersection_points).grid(row=5, column=8)
 
 root.mainloop()
