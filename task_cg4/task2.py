@@ -169,8 +169,8 @@ def redraw():
     var_x_trans.set(0)
     var_y_trans.set(0)
     var_rot.set(0)
-    var_x_scal.set(0)
-    var_y_scal.set(0)
+    var_x_scal.set(1)
+    var_y_scal.set(1)
 
     is_redraw = False
 
@@ -184,12 +184,12 @@ def coord_mult(shape, matrix):
         i += 2
 
 def translate():
-    dx = var_x_trans.get()
-    dy = var_y_trans.get()
+    d_x = var_x_trans.get()
+    d_y = var_y_trans.get()
 
     for shape in shapes:
         if shape.type == ShapeType.triangle or shape.type == ShapeType.square:
-            matrix = np.array([[1, 0, 0], [0, 1, 0], [dx, -dy, 1]])
+            matrix = np.array([[1, 0, 0], [0, 1, 0], [d_x, -d_y, 1]])
             coord_mult(shape, matrix)
     
     redraw()
@@ -228,6 +228,23 @@ def rotate():
                 coord_mult(shape, matrix)
     redraw()
 
+def scale():
+    k_x = var_x_scal.get()
+    k_y = var_y_scal.get()
+
+    for shape in shapes:
+        if shape.type == ShapeType.triangle or shape.type == ShapeType.square:
+                x_center, y_center = find_center(shape)
+                matrix = np.array([[1, 0, 0], [0, 1, 0], [-x_center, -y_center, 1]])
+                coord_mult(shape, matrix)
+
+                matrix = np.array([[k_x, 0, 0], [0, k_y, 0], [0, 0, 1]])
+                coord_mult(shape, matrix)
+
+                matrix = np.array([[1, 0, 0], [0, 1, 0], [x_center, y_center, 1]])
+                coord_mult(shape, matrix)
+    redraw()
+
 
 Label(root, text="Полигоны", padx=5, pady=5).grid(row=0, column=7)
 
@@ -244,13 +261,13 @@ var_rot = IntVar()
 var_rot.set(0)
 scale_rot = Scale(root, variable=var_rot, from_=-360, to=360, orient=HORIZONTAL, label='Градусы', length = '150').grid(row=2, column=7)
 
-Button(root, text="Маштабирование", padx=5, pady=5).grid(row=3, column=6)
-var_x_scal = IntVar()
-var_x_scal.set(0)
-scale_x_scal = Scale(root, variable=var_x_scal, from_=-10, to=10, orient=HORIZONTAL, label='X', length = '150').grid(row=3, column=7)
-var_y_scal = IntVar()
-var_y_scal.set(0)
-scale_y_scal = Scale(root, variable=var_y_scal, from_=-10, to=10, orient=HORIZONTAL, label='Y', length = '150').grid(row=3, column=8)
+Button(root, text="Маштабирование", padx=5, pady=5, command=scale).grid(row=3, column=6)
+var_x_scal = DoubleVar()
+var_x_scal.set(1)
+scale_x_scal = Scale(root, variable=var_x_scal, from_=0.1, to=10, resolution = 0.1, orient=HORIZONTAL, label='X', length = '150').grid(row=3, column=7)
+var_y_scal = DoubleVar()
+var_y_scal.set(1)
+scale_y_scal = Scale(root, variable=var_y_scal, from_=0.1, to=10, resolution = 0.1, orient=HORIZONTAL, label='Y', length = '150').grid(row=3, column=8)
 
 Label(root, text="Рёбра", padx=5, pady=5).grid(row=4, column=7)
 
