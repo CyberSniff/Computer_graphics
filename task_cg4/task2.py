@@ -210,13 +210,29 @@ def find_center(shape):
     y_res /= n
     return x_res, y_res
 
-def rotate():
-    degree = var_rot.get()
-    sin = math.sin(np.deg2rad(degree))
-    cos = math.cos(np.deg2rad(degree))
+def rotate(shape, angle):
+    sin = math.sin(np.deg2rad(angle))
+    cos = math.cos(np.deg2rad(angle))
+    
+    x_center, y_center = find_center(shape)
+    matrix = np.array([[1, 0, 0], [0, 1, 0], [-x_center, -y_center, 1]])
+    coord_mult(shape, matrix)
+
+    matrix = np.array([[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]])
+    coord_mult(shape, matrix)
+
+    matrix = np.array([[1, 0, 0], [0, 1, 0], [x_center, y_center, 1]])
+    coord_mult(shape, matrix)
+
+def rotate_polygons():
+    angle = var_rot.get()
+    '''sin = math.sin(np.deg2rad(angle))
+    cos = math.cos(np.deg2rad(angle))'''
 
     for shape in shapes:
         if shape.type == ShapeType.triangle or shape.type == ShapeType.square:
+            rotate(shape, angle)
+        '''if shape.type == ShapeType.triangle or shape.type == ShapeType.square:
                 x_center, y_center = find_center(shape)
                 matrix = np.array([[1, 0, 0], [0, 1, 0], [-x_center, -y_center, 1]])
                 coord_mult(shape, matrix)
@@ -225,7 +241,7 @@ def rotate():
                 coord_mult(shape, matrix)
 
                 matrix = np.array([[1, 0, 0], [0, 1, 0], [x_center, y_center, 1]])
-                coord_mult(shape, matrix)
+                coord_mult(shape, matrix)'''
     redraw()
 
 def scale():
@@ -245,6 +261,23 @@ def scale():
                 coord_mult(shape, matrix)
     redraw()
 
+def rotate_segments():
+    angle = 90
+
+    for shape in shapes:
+        if shape.type == ShapeType.segment:
+            rotate(shape, angle)
+
+    redraw()
+
+def rotate_segments_neg():
+    angle = -90
+
+    for shape in shapes:
+        if shape.type == ShapeType.segment:
+            print("OK 1")
+
+    redraw()
 
 Label(root, text="Полигоны", padx=5, pady=5).grid(row=0, column=7)
 
@@ -256,7 +289,7 @@ var_y_trans = IntVar()
 var_y_trans.set(0)
 scale_y_trans = Scale(root, variable=var_y_trans, from_=-300, to=300, orient=HORIZONTAL, label='Y', length = '150').grid(row=1, column=8)
 
-Button(root, text="Поворот", padx=5, pady=5, command=rotate).grid(row=2, column=6)
+Button(root, text="Поворот", padx=5, pady=5, command=rotate_polygons).grid(row=2, column=6)
 var_rot = IntVar()
 var_rot.set(0)
 scale_rot = Scale(root, variable=var_rot, from_=-360, to=360, orient=HORIZONTAL, label='Градусы', length = '150').grid(row=2, column=7)
@@ -271,8 +304,8 @@ scale_y_scal = Scale(root, variable=var_y_scal, from_=0.1, to=10, resolution = 0
 
 Label(root, text="Рёбра", padx=5, pady=5).grid(row=4, column=7)
 
-Button(root, text="Поворот на 90°", padx=5, pady=5).grid(row=5, column=6)
-Button(root, text="Поворот на -90°", padx=5, pady=5).grid(row=5, column=7)
+Button(root, text="Поворот на 90°", padx=5, pady=5, command=rotate_segments).grid(row=5, column=6)
+Button(root, text="Поворот на -90°", padx=5, pady=5, command=rotate_segments_neg).grid(row=5, column=7)
 Button(root, text="Поиск точек пересечения", padx=5, pady=5).grid(row=5, column=8)
 
 root.mainloop()
