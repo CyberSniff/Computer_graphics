@@ -1,0 +1,4 @@
+F random 90 color
+X
+F F
+X F[@[-X]+X]
