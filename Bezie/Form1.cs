@@ -110,7 +110,7 @@ namespace BezierCurve
             Point p1_2 = new Point(p1.X + (p2.X - p1.X) / 3,
                                 p1.Y + (p2.Y - p1.Y) / 3);
 
-           //draw_Bezier_curve(p0, p1_1, p1_2, p2);
+           draw_Bezier_curve(p0, p1_1, p1_2, p2);
 
         }
 
