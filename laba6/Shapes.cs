@@ -25,7 +25,6 @@ namespace laba6
     }
     class ShapePolygon
     {
-        //public List<ShapePoint> points = new List<ShapePoint>();
         public List<ShapeLine> lines = new List<ShapeLine>();
         public ShapePolygon(params ShapeLine[]lines)
         {
@@ -36,25 +35,32 @@ namespace laba6
     }
     class ShapePolyhedron
     {
-        public List<ShapePoint> points = new List<ShapePoint>();
-        public List<ShapeLine> lines = new List<ShapeLine>();
+        //public List<ShapePoint> points = new List<ShapePoint>();
+        //public List<ShapeLine> lines = new List<ShapeLine>();
         public List<ShapePolygon> polygons = new List<ShapePolygon>();
         public ShapePolyhedron(params ShapePolygon[]polygons)
         {
-            
             foreach (ShapePolygon polygon in polygons)
             {
                 this.polygons.Add(polygon);
-                foreach (ShapeLine line in polygon.lines)
+                /*foreach (ShapeLine line in polygon.lines)
                 {
                     lines.Add(line);
                     points.Add(line.first);
                     points.Add(line.second);
-                }
+                }*/
             }
-                
-
         }
 
+        public HashSet<ShapeLine>GetLines()
+        {
+            HashSet<ShapeLine> result = new HashSet<ShapeLine>();
+
+            foreach (ShapePolygon polygon in polygons)
+                foreach (ShapeLine line in polygon.lines)
+                    result.Add(line);
+
+            return result;
+        }
     }
 }

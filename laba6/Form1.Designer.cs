@@ -203,6 +203,7 @@ namespace laba6
             this.radioButton7.TabStop = true;
             this.radioButton7.Text = "Перспективная";
             this.radioButton7.UseVisualStyleBackColor = true;
+            this.radioButton7.CheckedChanged += new System.EventHandler(this.radioButton7_CheckedChanged);
             // 
             // radioButton6
             // 
@@ -215,6 +216,7 @@ namespace laba6
             this.radioButton6.TabStop = true;
             this.radioButton6.Text = "Аксонометрическая";
             this.radioButton6.UseVisualStyleBackColor = true;
+            this.radioButton6.CheckedChanged += new System.EventHandler(this.radioButton6_CheckedChanged);
             // 
             // groupBox3
             // 
@@ -303,7 +305,6 @@ namespace laba6
             this.radioButton10.TabStop = true;
             this.radioButton10.Text = "Масштабирование";
             this.radioButton10.UseVisualStyleBackColor = true;
-            this.radioButton10.CheckedChanged += new System.EventHandler(this.radioButton10_CheckedChanged);
             // 
             // radioButton9
             // 
@@ -315,7 +316,6 @@ namespace laba6
             this.radioButton9.TabStop = true;
             this.radioButton9.Text = "Вращение";
             this.radioButton9.UseVisualStyleBackColor = true;
-            this.radioButton9.CheckedChanged += new System.EventHandler(this.radioButton9_CheckedChanged);
             // 
             // radioButton8
             // 
@@ -327,7 +327,6 @@ namespace laba6
             this.radioButton8.TabStop = true;
             this.radioButton8.Text = "Смещение";
             this.radioButton8.UseVisualStyleBackColor = true;
-            this.radioButton8.CheckedChanged += new System.EventHandler(this.radioButton8_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -362,7 +361,6 @@ namespace laba6
             this.radioButton13.TabStop = true;
             this.radioButton13.Text = "Плоскость OYZ";
             this.radioButton13.UseVisualStyleBackColor = true;
-            this.radioButton13.CheckedChanged += new System.EventHandler(this.radioButton13_CheckedChanged);
             // 
             // radioButton12
             // 
@@ -374,7 +372,6 @@ namespace laba6
             this.radioButton12.TabStop = true;
             this.radioButton12.Text = "Плоскость OXZ";
             this.radioButton12.UseVisualStyleBackColor = true;
-            this.radioButton12.CheckedChanged += new System.EventHandler(this.radioButton12_CheckedChanged);
             // 
             // radioButton11
             // 
@@ -386,7 +383,6 @@ namespace laba6
             this.radioButton11.TabStop = true;
             this.radioButton11.Text = "Плоскость OXY";
             this.radioButton11.UseVisualStyleBackColor = true;
-            this.radioButton11.CheckedChanged += new System.EventHandler(this.radioButton11_CheckedChanged);
             // 
             // groupBox5
             // 
@@ -511,7 +507,6 @@ namespace laba6
             this.radioButton17.TabStop = true;
             this.radioButton17.Text = "Задать свою";
             this.radioButton17.UseVisualStyleBackColor = true;
-            this.radioButton17.CheckedChanged += new System.EventHandler(this.radioButton17_CheckedChanged);
             // 
             // label6
             // 
@@ -532,7 +527,6 @@ namespace laba6
             this.radioButton16.TabStop = true;
             this.radioButton16.Text = "Параллельная OZ";
             this.radioButton16.UseVisualStyleBackColor = true;
-            this.radioButton16.CheckedChanged += new System.EventHandler(this.radioButton16_CheckedChanged);
             // 
             // label7
             // 
@@ -560,7 +554,6 @@ namespace laba6
             this.radioButton15.TabStop = true;
             this.radioButton15.Text = "Параллельная OY";
             this.radioButton15.UseVisualStyleBackColor = true;
-            this.radioButton15.CheckedChanged += new System.EventHandler(this.radioButton15_CheckedChanged);
             // 
             // textBox6
             // 
@@ -579,7 +572,6 @@ namespace laba6
             this.radioButton14.TabStop = true;
             this.radioButton14.Text = "Параллельная OX";
             this.radioButton14.UseVisualStyleBackColor = true;
-            this.radioButton14.CheckedChanged += new System.EventHandler(this.radioButton14_CheckedChanged);
             // 
             // textBox7
             // 
