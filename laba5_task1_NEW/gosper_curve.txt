@@ -1,0 +1,5 @@
+F 60 0
+XF
+F F
+X X+YF++YF-FX--FXFX-YF+
+Y -FX+YFYF++YF+FX--FX-Y
